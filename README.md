@@ -17,3 +17,7 @@ El proceso de la creacion se basa principalmente de :
 ```
 
 ![Shot](https://user-images.githubusercontent.com/86977326/143447103-c2090956-3d13-4539-a725-eef9dcf70b68.png)
+
+Fecha de actualización: Nov-25th
+En la carpeta CRUD con MySQL esta un ejemplo simple de CRUD con el repositorio de MAVEN pero con MySQL.
+
