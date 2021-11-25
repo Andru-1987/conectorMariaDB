@@ -1,0 +1,222 @@
+package novoCRUD;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.*;
+import java.util.Scanner;
+
+public class CRUD {
+
+    private static Connection conectarDB(){
+        Connection cnx = null;
+
+        String driver="com.mysql.cj.jdbc.Driver";
+        String db="schoolDataBase";
+        String port="3306";
+        String host="localhost";
+
+        String url="jdbc:mysql://"+host+":"+port+"/"+db;
+        String user="root";
+        String pwd="";
+
+
+        try {
+            Class.forName(driver);
+            cnx=(Connection) DriverManager.getConnection(url,user,pwd);
+
+
+        } catch (SQLException e) {
+            System.out.println("No se pudo conectar");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class Name error");
+            e.printStackTrace();
+        }
+
+        return cnx;
+        
+    }
+
+    public static void desconectar(){
+//        Solo para desconectar con la DB
+
+        Connection cnx= conectarDB();
+
+        try {
+            cnx.close();
+            System.out.println("Se ha desconectado exitosamente de la base de datos.");
+        } catch (SQLException e) {
+            System.out.println("No se pudo desconectar"+e);
+        }
+    }
+
+    public static void consultar() {
+
+        Connection cnx = conectarDB();
+        String tabla = "data_alumnos";
+        String querySQL = "select * from " + tabla;
+
+
+        try {
+            Statement query = cnx.createStatement();
+            ResultSet rs = query.executeQuery(querySQL);
+
+            while (rs.next()) {
+                String id = rs.getString("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String email = rs.getString("email");
+                String gender = rs.getString("gender");
+
+                String respuesta = String.format("Genero: %s ID %s -> %s, %s : em@il  %s : ", gender, id, apellido, nombre, email);
+
+                System.out.println(respuesta);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void insertar(){
+
+            Connection cnx=conectarDB();
+            String tabla="data_alumnos";
+
+            Scanner sc= new Scanner(System.in);
+
+            System.out.println("Ingrese ID");
+            String id=sc.nextLine();
+            System.out.println("Ingrese nombre");
+            String nombre=sc.nextLine();
+            System.out.println("Ingrese apellido");
+            String apellido=sc.nextLine();
+            System.out.println("Ingrese email");
+            String email=sc.nextLine();
+            System.out.println("Ingrese genero");
+            String gender=sc.nextLine();
+
+
+            String sqlQuery=String.format("INSERT INTO data_alumnos (id,nombre,apellido,email,gender) VALUES (%s,'%s','%s','%s','%s')",id,nombre,apellido,email,gender);
+
+            try {
+                Statement st=cnx.createStatement();
+                st.execute(sqlQuery);
+
+            } catch (SQLException e) {
+                System.out.println("No se realizó la carga de datos");
+                e.printStackTrace();
+            }
+
+
+    }
+
+    public static void delete() {
+        Connection cnx = conectarDB();
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese el ID de un alumno a eliminar");
+        String id = sc.nextLine();
+        String sqlQuery = String.format("DELETE FROM data_alumnos where id= '%s'", id);
+
+        Statement st = null;
+        try {
+            st = cnx.createStatement();
+            st.execute(sqlQuery);
+            System.out.println("Alumno con ID# " + id + " ha sido eliminado");
+
+        } catch (SQLException e) {
+            System.out.println("No se ha podido eliminar #" + id);
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void update(){
+
+            Connection conx=conectarDB();
+            Scanner sc=new Scanner(System.in);
+
+            System.out.println("Ingrese el ID a actualizar");
+            String id=sc.nextLine();
+
+            System.out.println("Ingrese lo que desea actualizar");
+            String dato=sc.nextLine();
+
+            System.out.println("Ingrese el valor a actualizar");
+            String valor=sc.nextLine();
+
+
+            String sqlQuery=String.format("UPDATE data_alumnos SET %s='%s' WHERE id=%s",dato,valor,id);
+
+            try {
+                Statement sts=conx.createStatement();
+                sts.execute(sqlQuery);
+                System.out.println("Dato actualizado: #"+id);
+
+
+                String queryLine=String.format("SELECT * FROM data_alumnos WHERE id='%s'",id);
+                Statement st2=conx.createStatement();
+                ResultSet rs=st2.executeQuery(queryLine);
+
+                while (rs.next()) {
+                    String ide = rs.getString("id");
+                    String nombre = rs.getString("nombre");
+                    String apellido = rs.getString("apellido");
+                    String email = rs.getString("email");
+                    String gender = rs.getString("gender");
+
+                    String respuesta = String.format("Genero: %s ID %s -> %s, %s : em@il  %s : ", gender, ide, apellido, nombre, email);
+
+                    System.out.println(respuesta);
+                }
+
+
+            } catch (SQLException e) {
+                System.out.println("Dato no actualizado");
+                e.printStackTrace();
+            }
+
+
+    }
+
+    public static void main(String[] args){
+        System.out.println("Inicio de Programa Consola");
+        String mensaje=" Ingrese la opcion de CRUD\n Para Actualizar => 1\n Para Borrar => 2\n Para Mostrar Datos => 3\n Para Insertar => 4\n Para Terminar => 5";
+
+        System.out.println(mensaje);
+
+        Scanner sc=new Scanner(System.in);
+        String opcion=sc.nextLine();
+        String value="5";
+
+
+        while (true) {
+
+            if (opcion.equals(value)) {
+                desconectar();
+                break;
+            }
+            else if (opcion.equals("1")){
+//              update();
+            }
+            else if(opcion.equals("2")){
+                delete();
+            }
+            else if(opcion.equals("3")){
+                consultar();
+            }
+            else if(opcion.equals("4")){
+                insertar();
+            } else{
+                System.out.println("No te entiendo");
+            }
+
+            System.out.println(mensaje);
+            opcion= sc.nextLine();
+
+        }
+
+    }
+
+}
