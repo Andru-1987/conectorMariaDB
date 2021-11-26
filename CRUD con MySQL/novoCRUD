@@ -198,7 +198,7 @@ public class CRUD {
                 break;
             }
             else if (opcion.equals("1")){
-//              update();
+                update();
             }
             else if(opcion.equals("2")){
                 delete();
